@@ -24,3 +24,4 @@ const connectDB = async () => {
 };
 
 module.exports = connectDB;// Updated 2025-09-12 by Sarah Chen
+// Updated 2025-09-12 by Sarah Chen
