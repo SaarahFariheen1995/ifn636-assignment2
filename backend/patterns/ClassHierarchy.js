@@ -568,3 +568,4 @@ module.exports = {
     UserManager,
     ViolationManager
 };// Updated 2025-09-13 by Michael Rodriguez
+// Updated 2025-09-13 by Michael Rodriguez
