@@ -28,4 +28,4 @@
     }
 }
 
-module.exports = new EmailService();// Updated 2025-09-22 by Emily Johnson
+module.exports = new EmailService();

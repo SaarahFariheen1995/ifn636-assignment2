@@ -482,4 +482,4 @@ class PaymentController {
 }
 
 // Export single instance
-module.exports = new PaymentController();// Updated 2025-09-17 by David Kim
+module.exports = new PaymentController();

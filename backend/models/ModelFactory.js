@@ -32,4 +32,3 @@ class ModelFactory {
 }
 
 module.exports.ModelFactory = ModelFactory;
-// Updated 2025-09-24 by idrcmatre
