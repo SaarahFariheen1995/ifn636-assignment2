@@ -1,0 +1,100 @@
+name: E-Challan CI/CD Pipeline
+
+# test for demo on 25/08/25
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  test:
+    name: Run Tests and Deploy
+    runs-on: self-hosted
+    strategy:
+      matrix:
+        node-version: [22]
+    environment: MONGO_URI
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Print Environment Secrets
+        env:
+          MONGO_URI: ${{ secrets.MONGO_URI }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          PORT: ${{ secrets.PORT }}
+          EMAIL_USER: ${{ secrets.EMAIL_USER }}
+          EMAIL_PASS: ${{ secrets.EMAIL_PASS }}
+        run: |
+          echo "MongoDB URI is configured"
+          echo "JWT Secret is configured"
+          echo "Port is: $PORT"
+          echo "Email user is configured"
+
+      - name: Stop Running Services in AWS
+        run: pm2 stop all || true
+
+      - name: Install Backend Dependencies
+        working-directory: ./backend
+        run: |
+          npm install --global yarn
+          yarn --version
+          yarn install
+
+      - name: Install Frontend Dependencies and Build
+        working-directory: ./frontend
+        env:
+          CI: false
+        run: |
+          df -h
+          sudo rm -rf ./build
+          yarn install
+          yarn run build
+
+      - name: Run Backend Tests
+        env:
+          MONGO_URI: ${{ secrets.MONGO_URI }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          PORT: ${{ secrets.PORT }}
+          EMAIL_USER: ${{ secrets.EMAIL_USER }}
+          EMAIL_PASS: ${{ secrets.EMAIL_PASS }}
+          NODE_ENV: test
+        working-directory: ./backend
+        run: npm test
+
+      - name: Install Dependencies Using npm ci
+        working-directory: ./backend
+        run: npm ci
+
+      - name: Create .env File and Add Secrets for Production
+        working-directory: ./backend
+        run: |
+          touch .env
+          echo "${{ secrets.PROD }}" > .env
+
+      - name: Start Backend Services
+        working-directory: ./backend
+        run: |
+          pm2 start "npm run start" --name="e-challan-backend" || pm2 restart "e-challan-backend"
+
+      - name: Start Frontend Services
+        working-directory: ./frontend
+        run: |
+          pm2 serve build/ 3000 --name "e-challan-frontend" --spa || pm2 restart "e-challan-frontend"
+
+      - name: Save PM2 Configuration
+        run: pm2 save
+
+      - name: Check Application Status
+        run: |
+          pm2 status
+          sleep 10
+          echo "E-Challan application deployed successfully!"
+          
