@@ -73,4 +73,3 @@ paymentSchema.methods.toJSON = function () {
 };
 
 module.exports.Payment = mongoose.model('Payment', paymentSchema);
-// Updated 2025-09-16 by Sarah Chen

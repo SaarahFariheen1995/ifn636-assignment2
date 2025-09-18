@@ -187,4 +187,4 @@ class ModelFactory {
     }
 }
 
-module.exports.ModelFactory = ModelFactory;// Updated 2025-09-16 by Sarah Chen
+module.exports.ModelFactory = ModelFactory;

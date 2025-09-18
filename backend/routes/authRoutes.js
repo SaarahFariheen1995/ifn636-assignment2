@@ -52,4 +52,3 @@ authRouter.get('/statistics',
 
 module.exports.authRoutes = authRouter;
 
-// Updated 2025-09-20 by Emily Johnson

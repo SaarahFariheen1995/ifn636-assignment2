@@ -53,4 +53,4 @@ challanRouter.route('/:id')
         challanController.deleteChallan.bind(challanController)
     );
 
-module.exports.challanRoutes = challanRouter;// Updated 2025-09-20 by Emily Johnson
+module.exports.challanRoutes = challanRouter;

@@ -52,4 +52,4 @@ paymentRouter.post('/retry/:paymentId',
     paymentController.retryFailedPayment.bind(paymentController)
 );
 
-module.exports.paymentRoutes = paymentRouter;// Updated 2025-09-20 by Emily Johnson
+module.exports.paymentRoutes = paymentRouter;
