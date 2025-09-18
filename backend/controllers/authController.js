@@ -336,3 +336,4 @@ class AuthController {
 
 // Export single instance
 module.exports = new AuthController();// Updated 2025-09-18 by Michael Rodriguez
+// Updated 2025-09-18 by Michael Rodriguez
