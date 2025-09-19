@@ -217,3 +217,4 @@ const authMiddleware = new AuthMiddleware();
 module.exports = authMiddleware;
 
 // Updated 2025-09-19 by Emily Johnson
+// Updated 2025-09-19 by Emily Johnson
