@@ -12,7 +12,16 @@ const ChallanList = ({ challans, onChallanUpdate }) => {
     const [editFormData, setEditFormData] = useState({});
     const [editLoading, setEditLoading] = useState(false);
 
+    // Debug logging
+    console.log('ChallanList render - payingChallan state:', payingChallan);
+    console.log('User role:', user?.role);
+
     const getStatusBadge = (status) => {
+        // Add null/undefined check
+        if (!status) {
+            status = 'pending'; // Default to pending if status is missing
+        }
+
         const statusConfig = {
             pending: {
                 bg: 'bg-amber-50',
@@ -48,9 +57,38 @@ const ChallanList = ({ challans, onChallanUpdate }) => {
     const handlePayment = async (challanId) => {
         setPaymentLoading(true);
         try {
+            // Prepare payment data based on selected method
+            let paymentDetails = {};
+            let gatewayType = 'stripe';
+
+            if (paymentMethod === 'Card') {
+                paymentDetails = {
+                    cardNumber: '4111111111111111', // Test card number
+                    cvv: '123',
+                    expiryDate: '12/25',
+                    holderName: 'Test User'
+                };
+            } else if (paymentMethod === 'Digital Wallet') {
+                paymentDetails = {
+                    upiId: 'user@paytm',
+                    pin: '1234'
+                };
+            } else {
+                paymentDetails = {
+                    bankAccount: '1234567890',
+                    ifsc: 'TEST0001'
+                };
+            }
+
             const response = await axios.post(
                 `${API_BASE_URL}/payments/process`,
-                { challanId, paymentMethod },
+                {
+                    challanId,
+                    paymentMethod: paymentMethod === 'Card' ? 'credit_card' :
+                        paymentMethod === 'Digital Wallet' ? 'upi' : 'net_banking',
+                    paymentDetails,
+                    gatewayType
+                },
                 {
                     headers: { Authorization: `Bearer ${user.token}` }
                 }
@@ -66,6 +104,7 @@ const ChallanList = ({ challans, onChallanUpdate }) => {
             onChallanUpdate(response.data.challan);
             setPayingChallan(null);
         } catch (error) {
+            console.error('Payment error:', error.response?.data);
             alert(error.response?.data?.message || 'Payment failed');
         } finally {
             setPaymentLoading(false);
@@ -94,7 +133,8 @@ const ChallanList = ({ challans, onChallanUpdate }) => {
     };
 
     const handleEdit = (challan) => {
-        setEditingChallan(challan._id);
+        const challanId = challan.id || challan._id;
+        setEditingChallan(challanId);
         setEditFormData({
             violationType: challan.violationType,
             location: challan.location,
@@ -109,7 +149,7 @@ const ChallanList = ({ challans, onChallanUpdate }) => {
 
         try {
             const updateData = {};
-            const currentChallan = challans.find(c => c._id === challanId);
+            const currentChallan = challans.find(c => (c.id || c._id) === challanId);
 
             if (editFormData.violationType && editFormData.violationType !== currentChallan.violationType) {
                 updateData.violationType = editFormData.violationType;
@@ -190,7 +230,11 @@ const ChallanList = ({ challans, onChallanUpdate }) => {
     ];
 
     const formatDate = (date) => {
-        return new Date(date).toLocaleDateString('en-IN', {
+        if (!date) return 'Not set';
+        const parsedDate = new Date(date);
+        if (isNaN(parsedDate.getTime())) return 'Invalid Date';
+
+        return parsedDate.toLocaleDateString('en-IN', {
             year: 'numeric',
             month: 'short',
             day: 'numeric'
@@ -198,7 +242,11 @@ const ChallanList = ({ challans, onChallanUpdate }) => {
     };
 
     const formatDateTime = (date) => {
-        return new Date(date).toLocaleDateString('en-IN', {
+        if (!date) return 'Not set';
+        const parsedDate = new Date(date);
+        if (isNaN(parsedDate.getTime())) return 'Invalid Date';
+
+        return parsedDate.toLocaleDateString('en-IN', {
             year: 'numeric',
             month: 'short',
             day: 'numeric',
@@ -227,10 +275,14 @@ const ChallanList = ({ challans, onChallanUpdate }) => {
         <>
             <div className="space-y-6">
                 {challans.map((challan) => {
-                    const isEditing = editingChallan === challan._id;
+                    const challanId = challan.id || challan._id; // Handle both id formats
+                    const isEditing = editingChallan === challanId;
+
+                    // Debug logging for each challan
+                    console.log(`Challan ${challanId} - Status: ${challan.status}, User role: ${user?.role}`);
 
                     return (
-                        <div key={challan._id} className={`bg-white rounded-xl shadow-sm border transition-all duration-200 hover:shadow-md ${isEditing ? 'border-blue-300 ring-2 ring-blue-100' : 'border-gray-200'}`}>
+                        <div key={challanId} className={`bg-white rounded-xl shadow-sm border transition-all duration-200 hover:shadow-md ${isEditing ? 'border-blue-300 ring-2 ring-blue-100' : 'border-gray-200'}`}>
                             {/* Header */}
                             <div className={`px-6 py-4 border-b border-gray-200 ${isEditing ? 'bg-blue-50' : 'bg-gray-50'}`}>
                                 <div className="flex items-center justify-between">
@@ -377,7 +429,10 @@ const ChallanList = ({ challans, onChallanUpdate }) => {
                                         {isEditing ? (
                                             <>
                                                 <button
-                                                    onClick={() => handleEditSubmit(challan._id)}
+                                                    onClick={() => {
+                                                        const challanId = challan.id || challan._id;
+                                                        handleEditSubmit(challanId);
+                                                    }}
                                                     disabled={editLoading}
                                                     className="inline-flex items-center px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 disabled:opacity-50 transition-colors shadow-sm"
                                                 >
@@ -403,8 +458,16 @@ const ChallanList = ({ challans, onChallanUpdate }) => {
                                             <>
                                                 {user.role === 'citizen' && challan.status === 'pending' && (
                                                     <button
-                                                        onClick={() => setPayingChallan(challan._id)}
+                                                        onClick={(e) => {
+                                                            console.log('Pay Now button clicked!');
+                                                            console.log('Event:', e);
+                                                            console.log('Challan ID:', challanId);
+                                                            console.log('Current payingChallan state before:', payingChallan);
+                                                            setPayingChallan(challanId);
+                                                            console.log('setPayingChallan called with:', challanId);
+                                                        }}
                                                         className="inline-flex items-center px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 transition-colors shadow-sm"
+                                                        style={{ position: 'relative', zIndex: 10 }}
                                                     >
                                                         Pay Now
                                                     </button>
@@ -419,7 +482,7 @@ const ChallanList = ({ challans, onChallanUpdate }) => {
                                                             Edit
                                                         </button>
                                                         <button
-                                                            onClick={() => handleDelete(challan._id)}
+                                                            onClick={() => handleDelete(challanId)}
                                                             className="inline-flex items-center px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-lg hover:bg-red-700 transition-colors shadow-sm"
                                                         >
                                                             Delete
@@ -464,7 +527,10 @@ const ChallanList = ({ challans, onChallanUpdate }) => {
                             <div className="flex items-center justify-between mb-6">
                                 <h3 className="text-xl font-semibold text-gray-900">Process Payment</h3>
                                 <button
-                                    onClick={() => setPayingChallan(null)}
+                                    onClick={() => {
+                                        console.log('Closing payment modal');
+                                        setPayingChallan(null);
+                                    }}
                                     className="text-gray-400 hover:text-gray-600 p-2 rounded-lg hover:bg-gray-100 transition-colors"
                                 >
                                     X
@@ -476,7 +542,7 @@ const ChallanList = ({ challans, onChallanUpdate }) => {
                                     <div className="flex items-center justify-between">
                                         <span className="text-blue-800 font-medium">Amount to Pay:</span>
                                         <span className="text-2xl font-bold text-blue-900">
-                                            ₹{challans.find(c => c._id === payingChallan)?.fineAmount}
+                                            ₹{challans.find(c => (c.id || c._id) === payingChallan)?.fineAmount}
                                         </span>
                                     </div>
                                 </div>
@@ -509,7 +575,10 @@ const ChallanList = ({ challans, onChallanUpdate }) => {
 
                             <div className="flex space-x-3">
                                 <button
-                                    onClick={() => handlePayment(payingChallan)}
+                                    onClick={() => {
+                                        console.log('Processing payment for challan:', payingChallan);
+                                        handlePayment(payingChallan);
+                                    }}
                                     disabled={paymentLoading}
                                     className="flex-1 bg-green-600 text-white py-3 px-4 rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed font-medium transition-colors flex items-center justify-center"
                                 >
@@ -525,7 +594,10 @@ const ChallanList = ({ challans, onChallanUpdate }) => {
                                     )}
                                 </button>
                                 <button
-                                    onClick={() => setPayingChallan(null)}
+                                    onClick={() => {
+                                        console.log('Canceling payment');
+                                        setPayingChallan(null);
+                                    }}
                                     className="flex-1 bg-gray-100 text-gray-700 py-3 px-4 rounded-lg hover:bg-gray-200 font-medium transition-colors"
                                 >
                                     Cancel

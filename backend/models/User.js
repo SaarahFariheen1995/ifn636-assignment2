@@ -57,29 +57,45 @@ userSchema.methods.toOOPInstance = function () {
         id: this._id.toString(),
         name: this.name,
         email: this.email,
+        password: this.password, // Add this - OOP constructor expects it
         phone: this.phone,
         address: this.address,
         licenseNumber: this.licenseNumber,
-        vehicleNumbers: this.vehicleNumbers,
+        vehicleNumbers: this.vehicleNumbers || [],
         badgeNumber: this.badgeNumber,
         department: this.department,
         rank: this.rank,
         accessLevel: this.accessLevel,
         lastLogin: this.lastLogin,
         isActive: this.isActive,
-        specialAccess: this.specialAccess,
-        createdAt: this.createdAt
+        specialAccess: this.specialAccess || [],
+        createdAt: this.createdAt,
+        role: this.role // Add this explicitly
     };
 
-    switch (this.role) {
-        case 'citizen':
-            return new Citizen(userData);
-        case 'officer':
-            return new Officer(userData);
-        case 'admin':
-            return new Admin(userData);
-        default:
-            throw new Error(`Invalid user role: ${this.role}`);
+    console.log('Creating OOP instance for role:', this.role);
+    console.log('UserData being passed:', userData);
+
+    try {
+        switch (this.role) {
+            case 'citizen':
+                const citizen = new Citizen(userData);
+                console.log('Citizen created, permissions:', citizen.getPermissions());
+                return citizen;
+            case 'officer':
+                const officer = new Officer(userData);
+                console.log('Officer created, permissions:', officer.getPermissions());
+                return officer;
+            case 'admin':
+                const admin = new Admin(userData);
+                console.log('Admin created, permissions:', admin.getPermissions());
+                return admin;
+            default:
+                throw new Error(`Invalid user role: ${this.role}`);
+        }
+    } catch (error) {
+        console.error('Error creating OOP instance:', error);
+        throw error;
     }
 };
 
