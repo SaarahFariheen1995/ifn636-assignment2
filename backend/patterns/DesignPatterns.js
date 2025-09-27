@@ -1038,9 +1038,16 @@ class EChallanFacade {
                 const challans = await Challan.find({ officerId: userId });
                 const today = new Date().toDateString();
 
+                // Get payment data for collection amount
+                const challanIds = challans.map(c => c._id);
+                const payments = await Payment.find({
+                    challanId: { $in: challanIds },
+                    status: 'completed'
+                });
+
                 dashboardData = {
                     role: 'officer',
-                    totalIssued: challans.length,
+                    issuedChallans: challans.length,           // ← Must be 'issuedChallans', not 'totalIssued'
                     todayChallans: challans.filter(c =>
                         new Date(c.dateTime).toDateString() === today
                     ).length,
@@ -1049,6 +1056,7 @@ class EChallanFacade {
                         const currentMonth = new Date().getMonth();
                         return challanMonth === currentMonth;
                     }).length,
+                    collectionAmount: payments.reduce((sum, p) => sum + p.amount, 0), // ← This is missing
                     recentChallans: challans.slice(-5).map(c => c.toJSON())
                 };
             }
