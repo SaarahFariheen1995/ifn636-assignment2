@@ -438,6 +438,50 @@ class RedLightViolation extends Violation {
     }
 }
 
+class MobileUsageViolation extends Violation {
+    constructor(violationData) {
+        super(violationData);
+        this.evidenceType = violationData.evidenceType; // 'photo', 'video'
+    }
+
+    calculateFine() {
+        return 1000; // Standard fine for mobile usage
+    }
+
+    getViolationType() {
+        return 'Mobile Phone Usage';
+    }
+
+    toJSON() {
+        return {
+            ...super.toJSON(),
+            evidenceType: this.evidenceType
+        };
+    }
+}
+
+class GenericViolation extends Violation {
+    constructor(violationData) {
+        super(violationData);
+        this.customFine = violationData.customFine;
+    }
+
+    calculateFine() {
+        return this.customFine || 500; // Use custom fine or default
+    }
+
+    getViolationType() {
+        return 'Other';
+    }
+
+    toJSON() {
+        return {
+            ...super.toJSON(),
+            customFine: this.customFine
+        };
+    }
+}
+
 // =============================================================================
 // BUSINESS LOGIC CLASSES - Demonstrating Encapsulation
 // =============================================================================
@@ -563,6 +607,8 @@ module.exports = {
     ParkingViolation,
     HelmetViolation,
     RedLightViolation,
+    MobileUsageViolation,
+    GenericViolation,
 
     // Manager Classes
     UserManager,

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Refactored Payment Controller
  * Uses Strategy Pattern, Adapter Pattern, and OOP principles
  */
@@ -26,29 +26,50 @@ class PaymentController {
         const { challanId, paymentMethod, paymentDetails, gatewayType } = req.body;
 
         try {
+            console.log('=== PAYMENT DEBUG ===');
+            console.log('1. Request body:', { challanId, paymentMethod, gatewayType });
+            console.log('2. User ID:', req.user.id);
+
             // Validate user permissions
             const user = await User.findById(req.user.id);
             const userOOP = user.toOOPInstance();
 
+            console.log('3. User permissions:', userOOP.getPermissions());
+            console.log('4. Has make_payments?', userOOP.getPermissions().includes('make_payments'));
+
             if (!userOOP.getPermissions().includes('make_payments')) {
+                console.log('❌ FAILED: Permission check');
                 return res.status(403).json({ message: 'Access denied' });
             }
 
             // Find and validate challan
             const challan = await Challan.findById(challanId);
             if (!challan) {
+                console.log('❌ FAILED: Challan not found');
                 return res.status(404).json({ message: 'Challan not found' });
             }
 
+            console.log('5. Challan found:', {
+                id: challan._id,
+                citizenId: challan.citizenId.toString(),
+                status: challan.status
+            });
+
             // Ensure only challan owner can pay
             if (challan.citizenId.toString() !== req.user.id) {
+                console.log('❌ FAILED: Not challan owner');
+                console.log('   Challan belongs to:', challan.citizenId.toString());
+                console.log('   Current user:', req.user.id);
                 return res.status(403).json({ message: 'Access denied' });
             }
 
             // Check if already paid
             if (challan.status === 'paid') {
+                console.log('❌ FAILED: Already paid');
                 return res.status(400).json({ message: 'Challan already paid' });
             }
+
+            console.log('✅ All checks passed, proceeding with payment...');
 
             // Use Facade Pattern for simplified payment processing
             const paymentResult = await this.eChallanFacade.processPayment(
@@ -62,9 +83,11 @@ class PaymentController {
             );
 
             if (!paymentResult.success) {
+                console.log('❌ FAILED: Facade payment failed:', paymentResult.error);
                 return res.status(400).json({ message: paymentResult.error });
             }
 
+            console.log('✅ Payment successful');
             res.json({
                 message: 'Payment processed successfully',
                 payment: paymentResult.payment,
