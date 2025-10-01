@@ -1,0 +1,729 @@
+{
+  "info": {
+    "name": "E-Challan API - Complete CRUD Collection",
+    "_postman_id": "ecf3a1c3-1234-5678-9101-abcdef123456",
+    "description": "Complete Postman collection for E-Challan system testing all CRUD operations, design patterns, and user roles",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Auth - Register Citizen",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Test Citizen\",\n  \"email\": \"citizen@test.com\",\n  \"password\": \"password123\",\n  \"role\": \"citizen\",\n  \"phone\": \"1234567890\",\n  \"licenseNumber\": \"DL123456\",\n  \"vehicleNumbers\": [\"ABC123\", \"XYZ789\"]\n}"
+            },
+            "url": {
+              "raw": "http://localhost:5001/api/auth/register",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5001",
+              "path": ["api","auth","register"]
+            }
+          }
+        },
+        {
+          "name": "Auth - Register Officer",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Test Officer\",\n  \"email\": \"officer@test.com\",\n  \"password\": \"password123\",\n  \"role\": \"officer\",\n  \"phone\": \"9876543210\",\n  \"badgeNumber\": \"OFF001\",\n  \"department\": \"Traffic Police\",\n  \"rank\": \"Constable\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:5001/api/auth/register",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5001",
+              "path": ["api","auth","register"]
+            }
+          }
+        },
+        {
+          "name": "Auth - Register Admin",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Test Admin\",\n  \"email\": \"admin@test.com\",\n  \"password\": \"password123\",\n  \"role\": \"admin\",\n  \"phone\": \"5555555555\",\n  \"accessLevel\": \"super\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:5001/api/auth/register",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5001",
+              "path": ["api","auth","register"]
+            }
+          }
+        },
+        {
+          "name": "Auth - Login Citizen",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    pm.collectionVariables.set('token', response.token);",
+                  "    pm.collectionVariables.set('userId', response.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"citizen@test.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:5001/api/auth/login",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5001",
+              "path": ["api","auth","login"]
+            }
+          }
+        },
+        {
+          "name": "Auth - Login Officer",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    pm.collectionVariables.set('officerToken', response.token);",
+                  "    pm.collectionVariables.set('officerId', response.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"officer@test.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:5001/api/auth/login",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5001",
+              "path": ["api","auth","login"]
+            }
+          }
+        },
+        {
+          "name": "Auth - Profile GET",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": {
+              "raw": "http://localhost:5001/api/auth/profile",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5001",
+              "path": ["api","auth","profile"]
+            }
+          }
+        },
+        {
+          "name": "Auth - Profile UPDATE",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": { 
+              "mode": "raw", 
+              "raw": "{\n  \"phone\": \"1111111111\",\n  \"address\": \"123 Updated Street\"\n}" 
+            },
+            "url": {
+              "raw": "http://localhost:5001/api/auth/profile",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5001",
+              "path": ["api","auth","profile"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Challan CRUD Operations",
+      "item": [
+        {
+          "name": "Challan - CREATE (Officer)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const response = pm.response.json();",
+                  "    pm.collectionVariables.set('challanId', response.challan.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{officerToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"citizenEmail\": \"citizen@test.com\",\n  \"vehicleNumber\": \"ABC123\",\n  \"violationType\": \"speeding\",\n  \"location\": \"Highway 101\",\n  \"description\": \"Exceeding speed limit\",\n  \"speedLimit\": 60,\n  \"actualSpeed\": 85,\n  \"evidenceUrl\": \"https://example.com/evidence.jpg\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:5001/api/challans",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5001",
+              "path": ["api","challans"]
+            }
+          }
+        },
+        {
+          "name": "Challan - CREATE Parking Violation",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{officerToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"citizenEmail\": \"citizen@test.com\",\n  \"vehicleNumber\": \"XYZ789\",\n  \"violationType\": \"wrong parking\",\n  \"location\": \"Mall Parking Lot\",\n  \"description\": \"Parked in handicap zone\",\n  \"zoneType\": \"handicap\",\n  \"duration\": 45\n}"
+            },
+            "url": {
+              "raw": "http://localhost:5001/api/challans",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5001",
+              "path": ["api","challans"]
+            }
+          }
+        },
+        {
+          "name": "Challan - GET All (Citizen View)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": {
+              "raw": "http://localhost:5001/api/challans?page=1&limit=10",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5001",
+              "path": ["api","challans"],
+              "query": [
+                {"key": "page", "value": "1"},
+                {"key": "limit", "value": "10"}
+              ]
+            }
+          }
+        },
+        {
+          "name": "Challan - GET All (Officer View)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{officerToken}}" }],
+            "url": {
+              "raw": "http://localhost:5001/api/challans",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5001",
+              "path": ["api","challans"]
+            }
+          }
+        },
+        {
+          "name": "Challan - GET by ID",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": {
+              "raw": "http://localhost:5001/api/challans/{{challanId}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5001",
+              "path": ["api","challans","{{challanId}}"]
+            }
+          }
+        },
+        {
+          "name": "Challan - UPDATE (Citizen Dispute)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"disputeReason\": \"I was not driving at that time and location\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:5001/api/challans/{{challanId}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5001",
+              "path": ["api","challans","{{challanId}}"]
+            }
+          }
+        },
+        {
+          "name": "Challan - DELETE (Admin Only)",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": {
+              "raw": "http://localhost:5001/api/challans/{{challanId}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5001",
+              "path": ["api","challans","{{challanId}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Status & Dashboard Operations",
+      "item": [
+        {
+          "name": "Dashboard - GET Stats (Citizen)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": {
+              "raw": "http://localhost:5001/api/challans/stats",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5001",
+              "path": ["api","challans","stats"]
+            }
+          }
+        },
+        {
+          "name": "Dashboard - GET Stats (Officer)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{officerToken}}" }],
+            "url": {
+              "raw": "http://localhost:5001/api/challans/stats",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5001",
+              "path": ["api","challans","stats"]
+            }
+          }
+        },
+        {
+          "name": "Auth - User Statistics",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": {
+              "raw": "http://localhost:5001/api/auth/statistics",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5001",
+              "path": ["api","auth","statistics"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Payment CRUD Operations",
+      "item": [
+        {
+          "name": "Payment - PROCESS Credit Card",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    pm.collectionVariables.set('paymentId', response.payment.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"challanId\": \"{{challanId}}\",\n  \"paymentMethod\": \"credit_card\",\n  \"paymentDetails\": {\n    \"cardNumber\": \"4111111111111111\",\n    \"cvv\": \"123\",\n    \"expiryDate\": \"12/25\",\n    \"holderName\": \"Test Citizen\"\n  },\n  \"gatewayType\": \"stripe\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:5001/api/payments/process",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5001",
+              "path": ["api","payments","process"]
+            }
+          }
+        },
+        {
+          "name": "Payment - PROCESS UPI",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"challanId\": \"{{challanId}}\",\n  \"paymentMethod\": \"upi\",\n  \"paymentDetails\": {\n    \"upiId\": \"citizen@paytm\",\n    \"pin\": \"1234\"\n  }\n}"
+            },
+            "url": {
+              "raw": "http://localhost:5001/api/payments/process",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5001",
+              "path": ["api","payments","process"]
+            }
+          }
+        },
+        {
+          "name": "Payment - Process with Gateway",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"challanId\": \"{{challanId}}\",\n  \"paymentMethod\": \"credit_card\",\n  \"paymentDetails\": {\n    \"cardNumber\": \"4111111111111111\",\n    \"cvv\": \"123\",\n    \"cardType\": \"visa\"\n  },\n  \"gatewayType\": \"stripe\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:5001/api/payments/process-with-gateway",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5001",
+              "path": ["api","payments","process-with-gateway"]
+            }
+          }
+        },
+        {
+          "name": "Payment - GET History",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": {
+              "raw": "http://localhost:5001/api/payments/history",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5001",
+              "path": ["api","payments","history"]
+            }
+          }
+        },
+        {
+          "name": "Payment - GET Statistics",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": {
+              "raw": "http://localhost:5001/api/payments/statistics",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5001",
+              "path": ["api","payments","statistics"]
+            }
+          }
+        },
+        {
+          "name": "Payment - RETRY Failed Payment",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"newPaymentMethod\": \"upi\",\n  \"newPaymentDetails\": {\n    \"upiId\": \"retry@paytm\",\n    \"pin\": \"1234\"\n  }\n}"
+            },
+            "url": {
+              "raw": "http://localhost:5001/api/payments/retry/{{paymentId}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5001",
+              "path": ["api","payments","retry","{{paymentId}}"]
+            }
+          }
+        },
+        {
+          "name": "Payment - REFUND (Admin Only)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"paymentId\": \"{{paymentId}}\",\n  \"refundAmount\": 500,\n  \"reason\": \"Challan disputed and approved\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:5001/api/payments/refund",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5001",
+              "path": ["api","payments","refund"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Design Pattern Demonstrations",
+      "item": [
+        {
+          "name": "Pattern Test - Factory Pattern",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"violationType\": \"speeding\",\n  \"vehicleNumber\": \"TEST123\",\n  \"speedLimit\": 50,\n  \"actualSpeed\": 75,\n  \"location\": \"Test Highway\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:5001/api/test/factory",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5001",
+              "path": ["api","test","factory"]
+            }
+          }
+        },
+        {
+          "name": "Pattern Test - Factory (Parking)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"violationType\": \"wrong parking\",\n  \"vehicleNumber\": \"TEST456\",\n  \"zoneType\": \"handicap\",\n  \"duration\": 30,\n  \"location\": \"Shopping Mall\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:5001/api/test/factory",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5001",
+              "path": ["api","test","factory"]
+            }
+          }
+        },
+        {
+          "name": "Pattern Test - Strategy (Credit Card)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amount\": 500,\n  \"paymentMethod\": \"credit_card\",\n  \"paymentDetails\": {\n    \"cardNumber\": \"4111111111111111\",\n    \"cvv\": \"123\",\n    \"holderName\": \"Test User\"\n  }\n}"
+            },
+            "url": {
+              "raw": "http://localhost:5001/api/test/strategy",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5001",
+              "path": ["api","test","strategy"]
+            }
+          }
+        },
+        {
+          "name": "Pattern Test - Strategy (UPI)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amount\": 750,\n  \"paymentMethod\": \"upi\",\n  \"paymentDetails\": {\n    \"upiId\": \"test@paytm\",\n    \"pin\": \"1234\"\n  }\n}"
+            },
+            "url": {
+              "raw": "http://localhost:5001/api/test/strategy",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5001",
+              "path": ["api","test","strategy"]
+            }
+          }
+        },
+        {
+          "name": "Pattern Test - Adapter (Stripe)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"gateway\": \"stripe\",\n  \"paymentData\": {\n    \"amount\": 500,\n    \"currency\": \"usd\",\n    \"cardToken\": \"tok_visa\",\n    \"description\": \"E-Challan Payment\"\n  }\n}"
+            },
+            "url": {
+              "raw": "http://localhost:5001/api/test/adapter",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5001",
+              "path": ["api","test","adapter"]
+            }
+          }
+        },
+        {
+          "name": "Pattern Test - Adapter (PayPal)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"gateway\": \"paypal\",\n  \"paymentData\": {\n    \"paymentId\": \"PAYID-TEST123\",\n    \"payerId\": \"PAYER-TEST456\"\n  }\n}"
+            },
+            "url": {
+              "raw": "http://localhost:5001/api/test/adapter",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5001",
+              "path": ["api","test","adapter"]
+            }
+          }
+        },
+        {
+          "name": "Pattern Test - Singleton",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:5001/api/test/singleton",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5001",
+              "path": ["api","test","singleton"]
+            }
+          }
+        },
+        {
+          "name": "Pattern Test - Overview",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:5001/api/test/overview",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5001",
+              "path": ["api","test","overview"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Error Handling & Edge Cases",
+      "item": [
+        {
+          "name": "Auth - Invalid Login",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"invalid@test.com\",\n  \"password\": \"wrongpassword\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:5001/api/auth/login",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5001",
+              "path": ["api","auth","login"]
+            }
+          }
+        },
+        {
+          "name": "Challan - Unauthorized Access",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer invalid_token" }],
+            "url": {
+              "raw": "http://localhost:5001/api/challans",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5001",
+              "path": ["api","challans"]
+            }
+          }
+        },
+        {
+          "name": "Challan - Invalid ID",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": {
+              "raw": "http://localhost:5001/api/challans/invalid_id",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5001",
+              "path": ["api","challans","invalid_id"]
+            }
+          }
+        },
+        {
+          "name": "Payment - Invalid Payment Method",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"challanId\": \"{{challanId}}\",\n  \"paymentMethod\": \"invalid_method\",\n  \"paymentDetails\": {}\n}"
+            },
+            "url": {
+              "raw": "http://localhost:5001/api/payments/process",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5001",
+              "path": ["api","payments","process"]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    { "key": "token", "value": "", "type": "string" },
+    { "key": "officerToken", "value": "", "type": "string" },
+    { "key": "adminToken", "value": "", "type": "string" },
+    { "key": "userId", "value": "", "type": "string" },
+    { "key": "officerId", "value": "", "type": "string" },
+    { "key": "challanId", "value": "", "type": "string" },
+    { "key": "paymentId", "value": "", "type": "string" }
+  ]
+}

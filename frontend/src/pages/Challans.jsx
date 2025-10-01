@@ -11,18 +11,23 @@ const Challans = () => {
     const [loading, setLoading] = useState(true);
     const [showForm, setShowForm] = useState(false);
     const [filter, setFilter] = useState('all');
+    const [pagination, setPagination] = useState(null);
+
 
     const fetchChallans = useCallback(async () => {
         try {
-            const response = await axios.get(
-                `${API_BASE_URL}/challans`,
-                {
-                    headers: { Authorization: `Bearer ${user.token}` }
-                }
-            );
-            setChallans(response.data);
+            const response = await axios.get(`${API_BASE_URL}/challans`, {
+                headers: { Authorization: `Bearer ${user.token}` }
+            });
+
+            // Store challans as array
+            setChallans(response.data.challans || []);
+
+            // Optional: keep pagination for later use
+            setPagination(response.data.pagination);
         } catch (error) {
-            console.error('Failed to fetch challans:', error);
+            console.error("Failed to fetch challans:", error);
+            setChallans([]); // fallback
         } finally {
             setLoading(false);
         }
@@ -39,12 +44,15 @@ const Challans = () => {
     const handleChallanUpdate = (updatedChallanOrAction, challanId) => {
         if (updatedChallanOrAction === 'DELETE') {
             setChallans(prevChallans =>
-                prevChallans.filter(challan => challan._id !== challanId)
+                prevChallans.filter(challan => (challan.id || challan._id) !== challanId)
             );
         } else {
             setChallans(prevChallans => {
                 const updatedChallans = prevChallans.map(challan => {
-                    if (challan._id === updatedChallanOrAction._id) {
+                    const currentChallanId = challan.id || challan._id;
+                    const updatedChallanId = updatedChallanOrAction.id || updatedChallanOrAction._id;
+
+                    if (currentChallanId === updatedChallanId) {
                         return updatedChallanOrAction;
                     }
                     return challan;
