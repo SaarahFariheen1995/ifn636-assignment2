@@ -220,6 +220,29 @@ class AuthMiddleware {
     };
 
     /**
+ * Check if user has ANY of the specified permissions
+ */
+    requireAnyPermission = (...permissions) => {
+        return (req, res, next) => {
+            try {
+                const hasAnyPermission = permissions.some(permission =>
+                    req.user && req.user.canPerformAction(permission)
+                );
+
+                if (!hasAnyPermission) {
+                    return res.status(403).json({
+                        message: `One of these permissions required: ${permissions.join(', ')}`
+                    });
+                }
+
+                next();
+            } catch (error) {
+                return res.status(403).json({ message: 'Permission check failed' });
+            }
+        };
+    };
+
+    /**
      * Helper method to sanitize request body for audit logs
      */
     sanitizeRequestBody(body) {

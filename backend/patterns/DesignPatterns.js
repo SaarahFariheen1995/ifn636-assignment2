@@ -7,7 +7,7 @@
  * Problem: Need to create different violation types without coupling client code to specific classes
  * Solution: Factory pattern encapsulates object creation logic
  */
-const { SpeedingViolation, ParkingViolation, HelmetViolation, RedLightViolation, UserManager, ViolationManager } = require('./ClassHierarchy');
+const { SpeedingViolation, ParkingViolation, HelmetViolation, RedLightViolation, MobileUsageViolation, GenericViolation, UserManager, ViolationManager } = require('./ClassHierarchy');
 const User = require('../models/User');
 const Challan = require('../models/Challan');
 const { Payment } = require('../models/Payment');
@@ -26,7 +26,13 @@ class ViolationFactory {
             case 'helmet':
                 return new HelmetViolation(data);
             case 'red light':
+            case 'red light violation':
                 return new RedLightViolation(data);
+            case 'mobile phone usage':
+            case 'mobile usage':
+                return new MobileUsageViolation(data);
+            case 'other':  
+                return new GenericViolation(data);
             default:
                 throw new Error(`Unknown violation type: ${violationType}`);
         }
@@ -1047,6 +1053,7 @@ class EChallanFacade {
 
                 dashboardData = {
                     role: 'officer',
+
                     issuedChallans: challans.length,           // ← Must be 'issuedChallans', not 'totalIssued'
                     todayChallans: challans.filter(c =>
                         new Date(c.dateTime).toDateString() === today
@@ -1058,6 +1065,8 @@ class EChallanFacade {
                     }).length,
                     collectionAmount: payments.reduce((sum, p) => sum + p.amount, 0), // ← This is missing
                     recentChallans: challans.slice(-5).map(c => c.toJSON())
+
+           
                 };
             }
 

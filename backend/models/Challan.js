@@ -26,7 +26,7 @@ const challanSchema = new mongoose.Schema({
     violationType: {
         type: String,
         required: true,
-        enum: ['Speeding', 'Red Light', 'Wrong Parking', 'No Helmet', 'Mobile Usage', 'Other']
+        enum: ['Speeding', 'Red Light', 'Wrong Parking', 'No Helmet', 'Mobile Phone Usage', 'Other']
     },
     location: { type: String, required: true },
     dateTime: { type: Date, required: true, default: Date.now },

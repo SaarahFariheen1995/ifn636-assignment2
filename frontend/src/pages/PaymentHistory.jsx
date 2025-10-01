@@ -48,6 +48,11 @@ const PaymentHistory = () => {
     };
 
     const getStatusBadge = (status) => {
+        // Add null/undefined check
+        if (!status) {
+            status = 'completed'; // Default for payment history
+        }
+
         const statusConfig = {
             completed: { bg: 'bg-green-50', text: 'text-green-700', border: 'border-green-200' },
             pending: { bg: 'bg-yellow-50', text: 'text-yellow-700', border: 'border-yellow-200' },
