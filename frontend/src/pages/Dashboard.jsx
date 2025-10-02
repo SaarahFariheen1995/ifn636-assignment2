@@ -20,7 +20,7 @@ const Dashboard = () => {
                     headers: { Authorization: `Bearer ${user.token}` }
                 }
             );
-            setStats(response.data);
+            setStats(response.data.dashboard); // ← Changed from response.data
         } catch (error) {
             console.error('Failed to fetch stats:', error);
         } finally {

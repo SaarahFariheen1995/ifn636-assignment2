@@ -1,7 +1,3 @@
-// =============================================================================
-// REFACTORED ROUTES - Using Refactored Controllers
-// =============================================================================
-
 /**
  * Authentication Routes - Updated for OOP Controllers
  */

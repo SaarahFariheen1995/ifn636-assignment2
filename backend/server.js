@@ -1,8 +1,4 @@
-﻿// =============================================================================
-// UPDATED MAIN SERVER FILE - Integration Point
-// =============================================================================
-
-/**
+﻿/**
  * Updated server.js to use refactored routes and patterns
  */
 const express = require('express');

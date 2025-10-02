@@ -20,7 +20,8 @@ const Challans = () => {
                     headers: { Authorization: `Bearer ${user.token}` }
                 }
             );
-            setChallans(response.data);
+            // Make sure you're getting the challans array correctly
+            setChallans(response.data.challans || response.data); // Handle both formats
         } catch (error) {
             console.error('Failed to fetch challans:', error);
         } finally {
@@ -39,12 +40,15 @@ const Challans = () => {
     const handleChallanUpdate = (updatedChallanOrAction, challanId) => {
         if (updatedChallanOrAction === 'DELETE') {
             setChallans(prevChallans =>
-                prevChallans.filter(challan => challan._id !== challanId)
+                prevChallans.filter(challan => (challan.id || challan._id) !== challanId)
             );
         } else {
             setChallans(prevChallans => {
                 const updatedChallans = prevChallans.map(challan => {
-                    if (challan._id === updatedChallanOrAction._id) {
+                    const currentChallanId = challan.id || challan._id;
+                    const updatedChallanId = updatedChallanOrAction.id || updatedChallanOrAction._id;
+
+                    if (currentChallanId === updatedChallanId) {
                         return updatedChallanOrAction;
                     }
                     return challan;

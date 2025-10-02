@@ -1,7 +1,3 @@
-// =============================================================================
-// REFACTORED CHALLAN MODEL - Integrates with Violation Classes
-// =============================================================================
-
 /**
  * Challan Mongoose Model with OOP Integration
  * Maintains existing database schema while adding violation-specific fields

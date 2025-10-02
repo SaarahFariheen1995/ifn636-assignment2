@@ -1,8 +1,4 @@
-﻿// =============================================================================
-// 1. FACTORY PATTERN - Creating Different Types of Violations
-// =============================================================================
-
-/**
+﻿/**
  * Violation Factory
  * Problem: Need to create different violation types without coupling client code to specific classes
  * Solution: Factory pattern encapsulates object creation logic
@@ -48,9 +44,6 @@ class ViolationFactory {
     }
 }
 
-// =============================================================================
-// 2. STRATEGY PATTERN - Different Payment Processing Methods
-// =============================================================================
 
 /**
  * Payment Strategy Interface
@@ -215,10 +208,6 @@ class PaymentProcessor {
         return this.strategy.processPayment(amount, paymentDetails);
     }
 }
-
-// =============================================================================
-// 3. OBSERVER PATTERN - Notification System
-// =============================================================================
 
 /**
  * Observer Pattern for Notifications
@@ -402,10 +391,6 @@ class DatabaseLogObserver extends NotificationObserver {
     }
 }
 
-// =============================================================================
-// 4. SINGLETON PATTERN - Database Connection & Configuration
-// =============================================================================
-
 /**
  * Singleton Pattern for Database and Configuration
  * Problem: Need single instance of database connection and app configuration
@@ -533,10 +518,6 @@ class ConfigurationManager {
         current[keys[keys.length - 1]] = value;
     }
 }
-
-// =============================================================================
-// 5. ADAPTER PATTERN - Payment Gateway Integration
-// =============================================================================
 
 /**
  * Adapter Pattern for Payment Gateways
@@ -772,10 +753,6 @@ class PaymentGatewayFactory {
     }
 }
 
-// =============================================================================
-// 6. FACADE PATTERN - Simplified Interface for Complex Operations
-// =============================================================================
-
 /**
  * Facade Pattern for E-Challan Management
  * Problem: Complex interactions between multiple subsystems for challan operations
@@ -840,7 +817,6 @@ class EChallanFacade {
         }
     }
 
-    // FIXED: Real MongoDB integration for challan creation
     async createChallan(officerId, violationData) {
         try {
             // 1. Validate officer permissions
@@ -924,7 +900,6 @@ class EChallanFacade {
         }
     }
 
-    // FIXED: Real MongoDB integration for payment processing
     async processPayment(citizenId, challanId, paymentData) {
         try {
             // 1. Validate citizen
@@ -1009,7 +984,6 @@ class EChallanFacade {
         }
     }
 
-    // FIXED: Real MongoDB integration for dashboard
     async getUserDashboard(userId) {
         try {
             const user = await User.findById(userId);
@@ -1038,9 +1012,16 @@ class EChallanFacade {
                 const challans = await Challan.find({ officerId: userId });
                 const today = new Date().toDateString();
 
+                // Get payment data for collection amount
+                const challanIds = challans.map(c => c._id);
+                const payments = await Payment.find({
+                    challanId: { $in: challanIds },
+                    status: 'completed'
+                });
+
                 dashboardData = {
                     role: 'officer',
-                    totalIssued: challans.length,
+                    issuedChallans: challans.length,        
                     todayChallans: challans.filter(c =>
                         new Date(c.dateTime).toDateString() === today
                     ).length,
@@ -1049,6 +1030,7 @@ class EChallanFacade {
                         const currentMonth = new Date().getMonth();
                         return challanMonth === currentMonth;
                     }).length,
+                    collectionAmount: payments.reduce((sum, p) => sum + p.amount, 0),
                     recentChallans: challans.slice(-5).map(c => c.toJSON())
                 };
             }
@@ -1069,7 +1051,7 @@ class EChallanFacade {
         }
     }
 
-    // Get all challans with pagination
+    // Get all challans
     async getAllChallans(userId, userRole, page = 1, limit = 10) {
         try {
             const skip = (page - 1) * limit;
@@ -1141,10 +1123,6 @@ class EChallanFacade {
         }
     }
 }
-
-// =============================================================================
-// 7. DECORATOR PATTERN - Adding Features to User Permissions
-// =============================================================================
 
 /**
  * Decorator Pattern for User Permissions
@@ -1442,10 +1420,6 @@ class UserPermissionManager {
         return PermissionDecoratorFactory.createDecoratedUser(user, decoratorConfigs);
     }
 }
-
-// =============================================================================
-// EXPORT ALL PATTERN IMPLEMENTATIONS
-// =============================================================================
 
 module.exports = {
     // Factory Pattern

@@ -20,7 +20,7 @@ challanRouter.get('/stats',
 challanRouter.route('/')
     .get(
         authMiddleware.protect,
-        authMiddleware.requirePermission('view_challans') || authMiddleware.requirePermission('view_own_challans'),
+        authMiddleware.requireAnyPermission('view_challans', 'view_own_challans'), // ← Changed this
         authMiddleware.rateLimitByRole(),
         authMiddleware.auditAction('view_challans'),
         challanController.getChallans.bind(challanController)
