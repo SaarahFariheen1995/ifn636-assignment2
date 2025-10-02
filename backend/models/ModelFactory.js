@@ -1,7 +1,3 @@
-// =============================================================================
-// MODEL FACTORY - Creates Models with OOP Integration
-// =============================================================================
-
 class ModelFactory {
     static createUser(userData) {
         const User = require('./User');

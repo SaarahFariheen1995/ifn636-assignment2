@@ -1,7 +1,3 @@
-// =============================================================================
-// ABSTRACT BASE CLASSES - Demonstrating Abstraction
-// =============================================================================
-
 /**
  * Abstract User Base Class
  * Demonstrates: Abstraction, Encapsulation
@@ -129,10 +125,6 @@ class Violation {
         };
     }
 }
-
-// =============================================================================
-// CONCRETE USER CLASSES - Demonstrating Inheritance & Polymorphism
-// =============================================================================
 
 /**
  * Citizen Class
@@ -302,9 +294,6 @@ class Admin extends User {
     }
 }
 
-// =============================================================================
-// CONCRETE VIOLATION CLASSES - Demonstrating Inheritance & Polymorphism
-// =============================================================================
 
 class SpeedingViolation extends Violation {
     constructor(violationData) {
@@ -438,9 +427,6 @@ class RedLightViolation extends Violation {
     }
 }
 
-// =============================================================================
-// BUSINESS LOGIC CLASSES - Demonstrating Encapsulation
-// =============================================================================
 
 /**
  * User Manager Class
@@ -544,9 +530,6 @@ class ViolationManager {
     }
 }
 
-// =============================================================================
-// EXPORT CLASSES FOR USE IN APPLICATION
-// =============================================================================
 
 module.exports = {
     // Abstract Classes

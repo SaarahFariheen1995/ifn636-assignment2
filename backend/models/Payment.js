@@ -1,7 +1,3 @@
-// =============================================================================
-// PAYMENT MODEL - New Model for Payment Records
-// =============================================================================
-
 /**
  * Payment Model
  * Stores payment transaction records separately from challans

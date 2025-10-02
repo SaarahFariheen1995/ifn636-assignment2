@@ -1,7 +1,3 @@
-// =============================================================================
-// REFACTORED USER MODEL - Integrates with OOP Class Hierarchy
-// =============================================================================
-
 /**
  * User Mongoose Model with OOP Integration
  * Maintains existing database schema while adding OOP functionality
