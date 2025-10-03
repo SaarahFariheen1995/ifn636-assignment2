@@ -370,7 +370,7 @@ const ChallanList = ({ challans, onChallanUpdate }) => {
                                                     className="w-full border border-gray-300 rounded px-2 py-1 text-sm font-semibold text-red-600 mt-1"
                                                 />
                                             ) : (
-                                                <p className="font-semibold text-red-600 text-lg">₹{challan.fineAmount}</p>
+                                                <p className="font-semibold text-red-600 text-lg">${challan.fineAmount}</p>
                                             )}
                                         </div>
                                     </div>
@@ -539,7 +539,7 @@ const ChallanList = ({ challans, onChallanUpdate }) => {
                                     <div className="flex items-center justify-between">
                                         <span className="text-blue-800 font-medium">Amount to Pay:</span>
                                         <span className="text-2xl font-bold text-blue-900">
-                                            ₹{challans.find(c => (c.id || c._id) === payingChallan)?.fineAmount}
+                                            ${challans.find(c => (c.id || c._id) === payingChallan)?.fineAmount}
                                         </span>
                                     </div>
                                 </div>

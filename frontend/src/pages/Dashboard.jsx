@@ -112,7 +112,7 @@ const Dashboard = () => {
                                     <div>
                                         <p className="text-sm font-medium text-gray-600 mb-1">Total Fine Amount</p>
                                         <p className="text-3xl font-bold text-red-600">
-                                            ₹{stats.totalFineAmount || 0}
+                                            ${stats.totalFineAmount || 0}
                                         </p>
                                         <p className="text-xs text-gray-500 mt-1">Outstanding amount</p>
                                     </div>
@@ -159,7 +159,7 @@ const Dashboard = () => {
                                     <div>
                                         <p className="text-sm font-medium text-gray-600 mb-1">Collection Amount</p>
                                         <p className="text-3xl font-bold text-purple-600">
-                                            ₹{stats.collectionAmount || 0}
+                                            ${stats.collectionAmount || 0}
                                         </p>
                                         <p className="text-xs text-gray-500 mt-1">Total fines collected</p>
                                     </div>

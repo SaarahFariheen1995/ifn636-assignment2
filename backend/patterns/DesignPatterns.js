@@ -344,7 +344,7 @@ class SMSNotificationObserver extends NotificationObserver {
     }
 
     sendChallanCreatedSMS(data) {
-        const message = `New traffic violation issued. Challan: ${data.challanNumber}. Fine: ₹${data.fineAmount}. Pay online to avoid penalties.`;
+        const message = `New traffic violation issued. Challan: ${data.challanNumber}. Fine: $${data.fineAmount}. Pay online to avoid penalties.`;
 
         if (this.smsService && typeof this.smsService.sendSMS === 'function') {
             this.smsService.sendSMS(data.citizenPhone, message);
@@ -354,7 +354,7 @@ class SMSNotificationObserver extends NotificationObserver {
     }
 
     sendPaymentConfirmationSMS(data) {
-        const message = `Payment confirmed for Challan ${data.challanNumber}. Amount: ₹${data.amount}. Thank you.`;
+        const message = `Payment confirmed for Challan ${data.challanNumber}. Amount: $${data.amount}. Thank you.`;
 
         if (this.smsService && typeof this.smsService.sendSMS === 'function') {
             this.smsService.sendSMS(data.citizenPhone, message);

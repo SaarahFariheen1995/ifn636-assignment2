@@ -14,7 +14,7 @@
                     A new traffic violation has been issued:
                     Challan Number: {{challanNumber}}
                     Vehicle: {{vehicleNumber}}
-                    Fine Amount: ₹{{fineAmount}}
+                    Fine Amount: ${{fineAmount}}
                     Due Date: {{dueDate}}
                     
                     Please pay online to avoid penalties.
@@ -29,7 +29,7 @@
                     
                     Your payment has been successfully processed:
                     Transaction ID: {{transactionId}}
-                    Amount Paid: ₹{{amount}}
+                    Amount Paid: ${{amount}}
                     Challan Number: {{challanNumber}}
                     
                     Thank you for your prompt payment.

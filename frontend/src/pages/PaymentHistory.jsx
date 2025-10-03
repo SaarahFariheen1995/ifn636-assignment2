@@ -108,7 +108,7 @@ const PaymentHistory = () => {
                     <div className="flex items-center justify-between">
                         <div>
                             <p className="text-sm font-medium text-gray-600">Total Amount</p>
-                            <p className="text-2xl font-bold text-green-600">₹{totalAmount}</p>
+                            <p className="text-2xl font-bold text-green-600">${totalAmount}</p>
                         </div>
                         <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
                         </div>
@@ -120,7 +120,7 @@ const PaymentHistory = () => {
                         <div>
                             <p className="text-sm font-medium text-gray-600">Average Payment</p>
                             <p className="text-2xl font-bold text-purple-600">
-                                ₹{payments.length > 0 ? Math.round(totalAmount / payments.length) : 0}
+                                ${payments.length > 0 ? Math.round(totalAmount / payments.length) : 0}
                             </p>
                         </div>
                         <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
@@ -183,7 +183,7 @@ const PaymentHistory = () => {
                                     <div className="flex items-center space-x-3">
                                         {getStatusBadge(payment.status || 'completed')}
                                         <div className="text-right">
-                                            <p className="text-lg font-bold text-green-600">₹{payment.amount}</p>
+                                            <p className="text-lg font-bold text-green-600">${payment.amount}</p>
                                             <p className="text-xs text-gray-500">{payment.paymentMethod}</p>
                                         </div>
                                     </div>
